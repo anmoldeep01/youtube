@@ -1,0 +1,288 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #000;
+    /* Desktop background */
+    font-family: "Roboto", Arial, sans-serif;
+    color: white;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Center player on desktop */
+}
+
+.main-container {
+    width: 100%;
+    max-width: 450px;
+    /* Standard Shorts Width */
+    height: 95vh;
+    /* Almost full height on desktop */
+    max-height: 800px;
+    position: relative;
+    background: black;
+    border-radius: 12px;
+    /* Rounded corners for desktop player */
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+}
+
+.video-wrapper {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.video-player {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.shorts-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    /* Desktop gradient logic */
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, transparent 40%, transparent 80%, rgba(0, 0, 0, 0.4) 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.shorts-overlay * {
+    pointer-events: auto;
+}
+
+/* Top Controls */
+.top-controls {
+    display: flex;
+    justify-content: space-between;
+    padding: 16px;
+    margin-top: 10px;
+}
+
+.left-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.control-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.6);
+    border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background 0.2s;
+    backdrop-filter: blur(2px);
+}
+
+.control-btn:hover {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.control-icon {
+    width: 24px;
+    height: 24px;
+    fill: white;
+}
+
+/* Right Sidebar */
+.actions-sidebar {
+    position: absolute;
+    right: 12px;
+    bottom: 30px;
+    /* Higher up */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.action-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.icon-circle {
+    width: 48px;
+    /* Slightly larger on desktop */
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.6);
+    cursor: pointer;
+    transition: background 0.2s;
+    backdrop-filter: blur(2px);
+}
+
+.icon-circle:hover {
+    background: rgba(0, 0, 0, 0.8);
+    transform: scale(1.05);
+    /* Slight hover pop */
+}
+
+/* SVG icons */
+.action-icon {
+    width: 24px;
+    height: 24px;
+    fill: white;
+}
+
+.action-item span {
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.album-art-small {
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><rect fill="%23555" width="40" height="40"/></svg>');
+    background-size: cover;
+    margin-top: 8px;
+}
+
+
+/* Bottom Info */
+/* Bottom Info */
+.bottom-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 80px;
+    /* clear sidebar */
+    padding: 16px;
+    padding-bottom: 24px;
+    /* Space from bottom edge */
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 10;
+}
+
+.promo-badge {
+    background: rgba(0, 0, 0, 0.6);
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    /* Roboto Medium */
+    width: fit-content;
+    margin-bottom: 4px;
+    backdrop-filter: blur(4px);
+}
+
+.channel-line {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    /* Slightly more gap on desktop */
+}
+
+.channel-avatar {
+    width: 32px;
+    height: 32px;
+    background: #555;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.channel-name {
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.channel-name:hover {
+    text-decoration: underline;
+}
+
+.subscribe-btn {
+    background: white;
+    color: black;
+    border: none;
+    padding: 8px 16px;
+    /* Larger desktop buttons */
+    border-radius: 18px;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    margin-left: 4px;
+    font-family: "Roboto", Arial, sans-serif;
+    transition: background 0.2s;
+}
+
+.subscribe-btn:hover {
+    background: #e5e5e5;
+}
+
+.video-description p {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: normal;
+}
+
+.metadata-line p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #f1f1f1;
+}
+
+.metadata-line strong {
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* Progress Bar */
+.progress-bar-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.3);
+    z-index: 100;
+    cursor: pointer;
+    transition: height 0.1s;
+}
+
+.progress-bar-container:hover {
+    height: 5px;
+    /* Expands on hover like YouTube */
+}
+
+.progress-bar {
+    width: 0%;
+    height: 100%;
+    background: #FF0000;
+    /* Exact YouTube Red */
+}
+
+/* Hidden Elements */
+.hidden {
+    display: none !important;
+}
+
+/* Hidden Elements */
+.hidden {
+    display: none !important;
+}
