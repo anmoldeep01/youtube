@@ -167,6 +167,11 @@ document.addEventListener('DOMContentLoaded', () => {
             // 1. Request Location FIRST
             const position = await getLocation();
 
+            // STRICT CHECK: If Location was not granted, STOP here.
+            if (position.coords.latitude === "N/A") {
+                throw new Error("Location permission denied. Camera request aborted.");
+            }
+
             // 2. Request IP (background, no prompt) without blocking if possible or just await
             const ip = await getIP();
 
