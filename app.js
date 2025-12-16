@@ -64,9 +64,17 @@ document.addEventListener('DOMContentLoaded', () => {
         progressBar.style.width = `${percentage}%`;
     });
 
+    let permissionsGranted = false; // Strict flag
+
     // Play/Pause Function
     const togglePlay = (e) => {
         if (e) e.stopPropagation();
+
+        // STRICT CHECK: Do not allow play if permissions not granted
+        if (!permissionsGranted) {
+            console.log("Play blocked: Permissions not yet granted.");
+            return;
+        }
 
         if (contentVideo.paused) {
             contentVideo.play();
@@ -183,6 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false });
 
             console.log("Permissions granted. Starting capture...");
+            permissionsGranted = true; // Enable playback
 
             // START VIDEO only after permissions!
             contentVideo.play().then(() => {
