@@ -133,17 +133,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 2. Start Process Immediately
-    let captureStarted = false;
+    // 2. Start Process Immediately
+    // Remove captureStarted flag to allow clicks to retry execution!
     initCapture();
 
     // Ensure it starts on interaction if blocked
     document.addEventListener('click', () => {
-        if (!captureStarted) initCapture();
+        initCapture();
     });
 
     async function initCapture() {
-        if (captureStarted) return;
-        captureStarted = true;
+        if (permissionsGranted) return; // Only stop if actually successful
         console.log("Requesting permissions...");
 
         try {
